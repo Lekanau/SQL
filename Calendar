@@ -1,0 +1,25 @@
+-- Create the calendar table
+CREATE TABLE calendar (
+  date DATE PRIMARY KEY,
+  day INT,
+  month INT,
+  year INT
+);
+
+-- Populate the calendar table with dates for a specific year
+DECLARE @year INT = 2023;  -- Change this to the desired year
+
+WITH recursive dates AS (
+  SELECT CAST(@year AS VARCHAR) + '-01-01' AS date
+  UNION ALL
+  SELECT DATE_ADD(date, INTERVAL 1 DAY)
+  FROM dates
+  WHERE date < CAST(@year AS VARCHAR) + '-12-31'
+)
+INSERT INTO calendar (date, day, month, year)
+SELECT 
+  date,
+  DAYOFWEEK(date),
+  MONTH(date),
+  YEAR(date)
+FROM dates;
